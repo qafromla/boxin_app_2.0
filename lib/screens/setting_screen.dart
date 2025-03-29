@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:boxing_app/widgets/icon_buttons.dart';
 import 'package:boxing_app/widgets/bottom_button.dart';
-import 'package:boxing_app/screens/timer_sreen.dart';
+import 'package:boxing_app/screens/timer_sreen.dart'; // Import TimerScreen
 import 'package:boxing_app/utilities/sound_player.dart';
 import '../main.dart'; // Import the themeNotifier
 
