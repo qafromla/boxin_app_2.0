@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:boxing_app/widgets/icon_buttons.dart';
 import 'package:boxing_app/widgets/bottom_button.dart';
-import 'package:boxing_app/screens/timer_sreen.dart';
+import 'package:boxing_app/screens/timer_sreen.dart'; // Import TimerScreen
 import 'package:boxing_app/utilities/sound_player.dart';
+import '../main.dart'; // Import the themeNotifier
 
 class SettingScreen extends StatefulWidget {
   @override
@@ -10,7 +11,6 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
-  // const SettingScreen({super.key});
   int _roundLength = 60;
 
   int _restTime = 30;
@@ -37,7 +37,6 @@ class _SettingScreenState extends State<SettingScreen> {
     });
   }
 
-
   void _decrementRestTime() {
     setState(() {
       if (_restTime > 10) {
@@ -45,7 +44,6 @@ class _SettingScreenState extends State<SettingScreen> {
       }
     });
   }
-
 
   void _incrementRounds() {
     setState(() {
@@ -131,28 +129,42 @@ class _SettingScreenState extends State<SettingScreen> {
                 RoundIconButton(icon: Icons.add, onPressed: _incrementRounds),
               ],
             ),
+            SizedBox(height: 50),
+            // Switch for Dark Mode
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Dark Mode', style: TextStyle(fontSize: 20)),
+                Switch(
+                  value: themeNotifier.value == ThemeMode.dark,
+                  onChanged: (value) {
+                    setState(() {
+                      themeNotifier.value =
+                          value ? ThemeMode.dark : ThemeMode.light;
+                    });
+                  },
+                ),
+              ],
+            ),
             Spacer(),
             BottomButton(
               bottomTitle: 'Start timer',
               onTap: () async {
                 SoundPlayer.playRoundStartSound();
                 await Future.delayed(Duration(milliseconds: 500));
-                // final cappedRounds = _rounds > 24 ? 24 : _rounds;
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder:
                         (context) => TimerScreen(
-                      roundLength: _roundLength,
-                      restTime: _restTime,
-                      rounds: _rounds,
-                    ),
+                          roundLength: _roundLength,
+                          restTime: _restTime,
+                          rounds: _rounds,
+                        ),
                   ),
                 );
               },
             ),
-
-            // <-- pushes the button to the bottom
           ],
         ),
       ),

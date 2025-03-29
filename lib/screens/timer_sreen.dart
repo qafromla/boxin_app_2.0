@@ -6,8 +6,6 @@ import 'package:boxing_app/widgets/round_progress_bar.dart';
 import 'package:boxing_app/utilities/sound_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
-
-
 class TimerScreen extends StatefulWidget {
   final int roundLength;
   final int restTime;
@@ -33,18 +31,15 @@ class _TimerScreenState extends State<TimerScreen> {
   Timer? timer;
   bool justBeeped = false;
 
-
-
   @override
   void initState() {
     super.initState();
     currentRound = 1;
     timeLeft = widget.roundLength;
-    Future.delayed(Duration(microseconds: 500), () {
+    Future.delayed(Duration(milliseconds: 500), () {
       startTimer();
       WakelockPlus.enable();
     });
-
   }
 
   void startTimer() {
@@ -56,7 +51,6 @@ class _TimerScreenState extends State<TimerScreen> {
 
     timer = Timer.periodic(Duration(seconds: 1), (_) => tick());
   }
-
 
   void tick() {
     if (isPaused) return;
@@ -75,12 +69,6 @@ class _TimerScreenState extends State<TimerScreen> {
     });
   }
 
-
-
-
-
-
-
   void nextRoundOrEnd() {
     if (isResting) {
       isResting = false;
@@ -94,7 +82,6 @@ class _TimerScreenState extends State<TimerScreen> {
     } else {
       isResting = true;
       timeLeft = widget.restTime;
-
     }
   }
 
@@ -105,15 +92,17 @@ class _TimerScreenState extends State<TimerScreen> {
 
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: Text('Workout Complete!'),
-        actions: [
-          TextButton(
-            child: Text('OK'),
-            onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
+      builder:
+          (_) => AlertDialog(
+            title: Text('Workout Complete!'),
+            actions: [
+              TextButton(
+                child: Text('OK'),
+                onPressed:
+                    () => Navigator.popUntil(context, (route) => route.isFirst),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -146,7 +135,15 @@ class _TimerScreenState extends State<TimerScreen> {
           children: [
             RoundDisplay(current: currentRound, total: widget.rounds),
             SizedBox(height: 150),
-            TimerDisplay(timeLeft: timeLeft, formatTime: formatTime),
+            TimerDisplay(
+              timeLeft: timeLeft,
+              formatTime: formatTime,
+              textStyle: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.w900,
+                fontSize: 120,
+                letterSpacing: 2,
+              ),
+            ),
             SizedBox(height: 40),
             PhaseLabel(isResting: isResting),
             SizedBox(height: 40),
@@ -155,7 +152,7 @@ class _TimerScreenState extends State<TimerScreen> {
               currentRound: currentRound,
             ),
             SizedBox(height: 20),
-            _buildControlButtons()
+            _buildControlButtons(),
           ],
         ),
       ),
@@ -168,9 +165,7 @@ class _TimerScreenState extends State<TimerScreen> {
       foregroundColor: Colors.white,
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
       textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     );
 
     final ButtonStyle continueButtonStyle = mainButtonStyle.copyWith(
@@ -178,7 +173,9 @@ class _TimerScreenState extends State<TimerScreen> {
     );
 
     final ButtonStyle stopButtonStyle = mainButtonStyle.copyWith(
-      backgroundColor: MaterialStateProperty.all(Colors.grey[600]), // darker gray
+      backgroundColor: MaterialStateProperty.all(
+        Colors.grey[600],
+      ), // darker gray
       foregroundColor: MaterialStateProperty.all(Colors.white),
     );
 
@@ -206,29 +203,4 @@ class _TimerScreenState extends State<TimerScreen> {
       );
     }
   }
-
-
-
-// Widget _buildControlButtons() {
-//   if (isPaused) {
-//     return Column(
-//       children: [
-//         ElevatedButton(
-//           onPressed: resumeTimer,
-//           child: Text('Continue'),
-//         ),
-//         SizedBox(height: 10),
-//         ElevatedButton(
-//           onPressed: stopTimer,
-//           child: Text('Stop'),
-//         ),
-//       ],
-//     );
-//   } else {
-//     return ElevatedButton(
-//       onPressed: pauseTimer,
-//       child: Text('Pause'),
-//     );
-//   }
-// }
 }

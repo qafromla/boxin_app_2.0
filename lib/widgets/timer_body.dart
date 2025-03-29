@@ -10,11 +10,10 @@ class RoundDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       'Round: $current / $total',
-      style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800,),
+      style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800),
     );
   }
 }
-
 
 class PhaseLabel extends StatelessWidget {
   final bool isResting;
@@ -38,23 +37,26 @@ class PhaseLabel extends StatelessWidget {
 class TimerDisplay extends StatelessWidget {
   final int timeLeft;
   final String Function(int) formatTime;
+  final TextStyle? textStyle;
 
   const TimerDisplay({
     super.key,
     required this.timeLeft,
     required this.formatTime,
+    this.textStyle,
   });
 
   @override
   Widget build(BuildContext context) {
     return Text(
       formatTime(timeLeft),
-      style: const TextStyle(
-        fontSize: 120,
-        fontWeight: FontWeight.w900,
-        color: Colors.black,
-        letterSpacing: 2,
-      ),
+      style:
+          textStyle ??
+          Theme.of(context).textTheme.headlineMedium?.copyWith(
+            fontSize: 120,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 2,
+          ),
     );
   }
 }
