@@ -4,6 +4,7 @@ import 'package:boxing_app/widgets/bottom_button.dart';
 import 'package:boxing_app/screens/timer_sreen.dart'; // Import TimerScreen
 import 'package:boxing_app/utilities/sound_player.dart';
 import '../main.dart'; // Import the themeNotifier
+import 'package:boxing_app/screens/traing_history_screen.dart';
 
 class SettingScreen extends StatefulWidget {
   @override
@@ -96,6 +97,8 @@ class _SettingScreenState extends State<SettingScreen> {
                         ],
                       ),
                 );
+              } else if (value == 'history') {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => TrainingHistoryScreen()));
               }
             },
             itemBuilder: (BuildContext context) {
@@ -121,6 +124,12 @@ class _SettingScreenState extends State<SettingScreen> {
                 PopupMenuItem<String>(
                   value: 'subscription',
                   child: Text('Subscription'),
+                  // Add this line
+                ),
+                PopupMenuItem<String>(
+                  value: 'history',
+                  child: Text('Traing History'),
+                  // Add this line
                 ),
               ];
             },

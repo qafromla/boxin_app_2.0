@@ -70,6 +70,7 @@ class _TimerScreenState extends State<TimerScreen> {
   }
 
   void nextRoundOrEnd() {
+    // Finished resting → go to next round or end
     if (isResting) {
       isResting = false;
       if (currentRound < widget.rounds) {
@@ -77,11 +78,16 @@ class _TimerScreenState extends State<TimerScreen> {
         timeLeft = widget.roundLength;
         SoundPlayer.playRoundStartSound();
       } else {
-        stopTimer();
+        stopTimer(); // no round left, finish training
       }
     } else {
-      isResting = true;
-      timeLeft = widget.restTime;
+      // Finished round → rest only if NOT last round
+      if (currentRound < widget.rounds) {
+        isResting = true;
+        timeLeft = widget.restTime;
+      } else {
+        stopTimer(); // last round done
+      }
     }
   }
 
