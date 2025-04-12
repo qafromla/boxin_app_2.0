@@ -5,6 +5,8 @@ import 'package:boxing_app/utilities/time_formatter.dart';
 import 'package:boxing_app/widgets/round_progress_bar.dart';
 import 'package:boxing_app/utilities/sound_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:boxing_app/models/training_session.dart';
+import 'package:boxing_app/widgets/training_storage.dart';
 
 class TimerScreen extends StatefulWidget {
   final int roundLength;
@@ -91,10 +93,18 @@ class _TimerScreenState extends State<TimerScreen> {
     }
   }
 
-  void stopTimer() {
+  void stopTimer() async {
     timer?.cancel();
     isRunning = false;
     isResting = false;
+    // ✅ Save the completed training session
+    final session = TrainingSession(
+      date: DateTime.now(),
+      rounds: widget.rounds,
+      roundLength: widget.roundLength,
+      restTime: widget.restTime,
+    );
+    await TrainingStorage.saveSession(session);
 
     showDialog(
       context: context,
