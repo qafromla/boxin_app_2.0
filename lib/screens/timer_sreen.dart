@@ -169,14 +169,12 @@ class _TimerScreenState extends State<TimerScreen> {
     );
 
     final ButtonStyle continueButtonStyle = mainButtonStyle.copyWith(
-      backgroundColor: MaterialStateProperty.all(Colors.green[700]),
+      backgroundColor: WidgetStatePropertyAll(Colors.green[700]),
     );
 
     final ButtonStyle stopButtonStyle = mainButtonStyle.copyWith(
-      backgroundColor: MaterialStateProperty.all(
-        Colors.grey[600],
-      ), // darker gray
-      foregroundColor: MaterialStateProperty.all(Colors.white),
+      backgroundColor: WidgetStatePropertyAll(Colors.grey[600]), // darker gray
+      foregroundColor: WidgetStatePropertyAll(Colors.white),
     );
 
     if (isPaused) {

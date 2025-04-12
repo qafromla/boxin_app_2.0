@@ -68,7 +68,65 @@ class _SettingScreenState extends State<SettingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Boxing Timer Setting')),
+      appBar: AppBar(
+        title: Text('Boxing Timer Setting'),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'darkMode') {
+                setState(() {
+                  themeNotifier.value =
+                      themeNotifier.value == ThemeMode.dark
+                          ? ThemeMode.light
+                          : ThemeMode.dark;
+                });
+              } else if (value == 'subscription') {
+                // Future functionality for subscription
+                showDialog(
+                  context: context,
+                  builder:
+                      (context) => AlertDialog(
+                        title: Text('Subscription'),
+                        content: Text('This feature will be available soon.'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text('OK'),
+                          ),
+                        ],
+                      ),
+                );
+              }
+            },
+            itemBuilder: (BuildContext context) {
+              return [
+                PopupMenuItem<String>(
+                  value: 'darkMode',
+                  child: Row(
+                    children: [
+                      Text('Dark Mode'),
+                      Spacer(),
+                      Switch(
+                        value: themeNotifier.value == ThemeMode.dark,
+                        onChanged: (value) {
+                          setState(() {
+                            themeNotifier.value =
+                                value ? ThemeMode.dark : ThemeMode.light;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                PopupMenuItem<String>(
+                  value: 'subscription',
+                  child: Text('Subscription'),
+                ),
+              ];
+            },
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -130,27 +188,13 @@ class _SettingScreenState extends State<SettingScreen> {
               ],
             ),
             SizedBox(height: 50),
-            // Switch for Dark Mode
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('Dark Mode', style: TextStyle(fontSize: 20)),
-                Switch(
-                  value: themeNotifier.value == ThemeMode.dark,
-                  onChanged: (value) {
-                    setState(() {
-                      themeNotifier.value =
-                          value ? ThemeMode.dark : ThemeMode.light;
-                    });
-                  },
-                ),
-              ],
-            ),
+
             Spacer(),
             BottomButton(
               bottomTitle: 'Start timer',
               onTap: () async {
-                SoundPlayer.playRoundStartSound();
+                // Ensure the sound is played before navigating
+                await SoundPlayer.playRoundStartSound();
                 await Future.delayed(Duration(milliseconds: 500));
                 Navigator.push(
                   context,
