@@ -58,6 +58,10 @@ class _TimerScreenState extends State<TimerScreen> {
     if (isPaused) return;
 
     setState(() {
+      // 🔊 Countdown beep at 5, 4, 3, 2, 1 seconds
+      if (timeLeft <= 6 && timeLeft > 0) {
+        SoundPlayer.playBeepSound();
+      }
       // 🎯 Play end-round sound 4 seconds before timer ends (only during fight phase)
       if (timeLeft == 4 && !isResting) {
         SoundPlayer.playEndRoundSound();
@@ -72,21 +76,22 @@ class _TimerScreenState extends State<TimerScreen> {
   }
 
   void nextRoundOrEnd() {
-    // Finished resting → go to next round or end
     if (isResting) {
+      // Finished resting → go to next round or end
       isResting = false;
-      if (currentRound < widget.rounds) {
-        currentRound++;
+      currentRound++;
+      if (currentRound <= widget.rounds) {
         timeLeft = widget.roundLength;
-        SoundPlayer.playRoundStartSound();
+        SoundPlayer.playRoundStartSound(); // 🔔 round start
       } else {
-        stopTimer(); // no round left, finish training
+        stopTimer(); // training ends
       }
     } else {
       // Finished round → rest only if NOT last round
       if (currentRound < widget.rounds) {
         isResting = true;
         timeLeft = widget.restTime;
+        SoundPlayer.playRestStartSound(); // ✅ rest start sound here
       } else {
         stopTimer(); // last round done
       }

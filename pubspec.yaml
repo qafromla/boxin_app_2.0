@@ -48,8 +48,10 @@ flutter:
 
     assets:
         - assets/sounds/start_boxing_bell.mp3
-        - assets/sounds/end_boxing_bell.mp3
+        - assets/sounds/boxing_bell.mp3
         - assets/sounds/beep_sound.mp3
+        - assets/sounds/boxing_bell_1.wav
+        - assets/sounds/beep_sound_1.wav
 
     # An image asset can refer to one or more resolution-specific "variants", see
     # https://flutter.dev/to/resolution-aware-images
