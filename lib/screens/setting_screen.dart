@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:boxing_app/widgets/icon_buttons.dart';
 import 'package:boxing_app/widgets/bottom_button.dart';
-import 'package:boxing_app/screens/timer_sreen.dart'; // Import TimerScreen
-import 'package:boxing_app/utilities/sound_player.dart';
+import 'package:boxing_app/widgets/countdown_launcher.dart';
 import '../main.dart'; // Import the themeNotifier
 import 'package:boxing_app/screens/traing_history_screen.dart';
 
@@ -98,7 +97,12 @@ class _SettingScreenState extends State<SettingScreen> {
                       ),
                 );
               } else if (value == 'history') {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => TrainingHistoryScreen()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TrainingHistoryScreen(),
+                  ),
+                );
               }
             },
             itemBuilder: (BuildContext context) {
@@ -201,22 +205,13 @@ class _SettingScreenState extends State<SettingScreen> {
             Spacer(),
             BottomButton(
               bottomTitle: 'Start timer',
-              onTap: () async {
-                // Ensure the sound is played before navigating
-                await SoundPlayer.playRoundStartSound();
-                await Future.delayed(Duration(milliseconds: 500));
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder:
-                        (context) => TimerScreen(
-                          roundLength: _roundLength,
-                          restTime: _restTime,
-                          rounds: _rounds,
-                        ),
+              onTap:
+                  () => launchCountdownAndNavigate(
+                    context: context,
+                    roundLength: _roundLength,
+                    restTime: _restTime,
+                    rounds: _rounds,
                   ),
-                );
-              },
             ),
           ],
         ),
