@@ -32,6 +32,7 @@ class _TimerScreenState extends State<TimerScreen> {
   bool isPaused = false;
   Timer? timer;
   bool justBeeped = false;
+  int roundsCompleted = 0;
 
   @override
   void initState() {
@@ -80,6 +81,7 @@ class _TimerScreenState extends State<TimerScreen> {
       // Finished resting → go to next round or end
       isResting = false;
       currentRound++;
+      roundsCompleted = currentRound; // ✅ track actual finished round
       if (currentRound <= widget.rounds) {
         timeLeft = widget.roundLength;
         SoundPlayer.playRoundStartSound(); // 🔔 round start
@@ -105,7 +107,7 @@ class _TimerScreenState extends State<TimerScreen> {
     // ✅ Save the completed training session
     final session = TrainingSession(
       date: DateTime.now(),
-      rounds: widget.rounds,
+      rounds: roundsCompleted,
       roundLength: widget.roundLength,
       restTime: widget.restTime,
     );
@@ -171,6 +173,7 @@ class _TimerScreenState extends State<TimerScreen> {
             RoundProgressBar(
               totalRounds: widget.rounds,
               currentRound: currentRound,
+              isResting: isResting,
             ),
             SizedBox(height: 20),
             _buildControlButtons(),

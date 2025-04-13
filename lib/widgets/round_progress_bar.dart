@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
-
 class RoundProgressBar extends StatelessWidget {
   final int totalRounds;
   final int currentRound;
+  final bool isResting;
 
   const RoundProgressBar({
     Key? key,
     required this.totalRounds,
     required this.currentRound,
+    required this.isResting,
   }) : super(key: key);
 
   @override
@@ -21,12 +22,15 @@ class RoundProgressBar extends StatelessWidget {
         final roundNumber = index + 1;
         Color color;
 
-        if (roundNumber < currentRound) {
-          color = Colors.green; // Completed
-        } else if (roundNumber == currentRound) {
-          color = Colors.orange; // Current round
+        if (roundNumber < currentRound ||
+            (roundNumber == currentRound && isResting)) {
+          color = Colors.green; // ✅ Mark current round as complete during rest
+        } else if (roundNumber == currentRound && !isResting) {
+          color = Colors.orange; // 🟧 Active round
+        } else if (roundNumber == currentRound + 1 && isResting) {
+          color = Colors.yellow; // 🟨 Next round during rest
         } else {
-          color = Colors.grey; // Not yet started
+          color = Colors.grey; // 🔘 Not started
         }
 
         return Container(
