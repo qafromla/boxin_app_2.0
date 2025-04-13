@@ -101,18 +101,52 @@ class _TimerScreenState extends State<TimerScreen> {
   }
 
   void stopTimer() async {
-    timer?.cancel();
-    isRunning = false;
-    isResting = false;
-    // ✅ Save the completed training session
-    final session = TrainingSession(
-      date: DateTime.now(),
-      rounds: roundsCompleted,
-      roundLength: widget.roundLength,
-      restTime: widget.restTime,
-    );
-    await TrainingStorage.saveSession(session);
+    // If the session finished naturally (isRunning is false), show summary immediately
+    if (!isRunning) {
+      _showCompletedDialog();
+      return;
+    }
 
+    // If user pressed Stop while running — confirm first
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            title: Text('End Workout?'),
+            content: Text(
+              'Are you sure you want to complete the workout early?',
+            ),
+            actions: [
+              TextButton(
+                child: Text('Cancel'),
+                onPressed: () => Navigator.of(context).pop(false),
+              ),
+              TextButton(
+                child: Text('Yes, End Workout'),
+                onPressed: () => Navigator.of(context).pop(true),
+              ),
+            ],
+          ),
+    );
+
+    if (confirm == true) {
+      timer?.cancel();
+      isRunning = false;
+      isResting = false;
+
+      final session = TrainingSession(
+        date: DateTime.now(),
+        rounds: roundsCompleted,
+        roundLength: widget.roundLength,
+        restTime: widget.restTime,
+      );
+      await TrainingStorage.saveSession(session);
+
+      _showCompletedDialog();
+    }
+  }
+
+  void _showCompletedDialog() {
     showDialog(
       context: context,
       builder:
