@@ -23,4 +23,17 @@ class TrainingStorage {
         .map((jsonStr) => TrainingSession.fromJson(jsonDecode(jsonStr)))
         .toList();
   }
+
+  static Future<void> deleteSessionAt(int index) async {
+    final prefs = await SharedPreferences.getInstance();
+    final sessions = await getSessions();
+
+    if (index < sessions.length) {
+      sessions.removeAt(index);
+      final jsonList =
+          sessions.map((session) => jsonEncode(session.toJson())).toList();
+      await prefs.setStringList(_key, jsonList);
+    }
+  }
+
 }

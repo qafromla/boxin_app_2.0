@@ -41,16 +41,58 @@ class _TrainingHistoryScreenState extends State<TrainingHistoryScreen> {
                 itemCount: _sessions.length,
                 itemBuilder: (context, index) {
                   final session = _sessions[index];
-                  return Card(
-                    margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: ListTile(
-                      title: Text(
-                        DateFormat('MMM dd, yyyy – HH:mm').format(session.date),
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text(
-                        'Rounds: ${session.rounds} | Round: ${_formatDuration(session.roundLength)} | Rest: ${_formatDuration(session.restTime)}\n'
-                        'Total Time: ${_formatDuration(session.totalTrainingTime)}',
+                  return Dismissible(
+                    key: Key(session.date.toIso8601String()),
+                    direction: DismissDirection.endToStart,
+                    background: Container(
+                      color: Colors.red,
+                      alignment: Alignment.centerRight,
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Icon(Icons.delete, color: Colors.white),
+                    ),
+                    confirmDismiss: (_) async {
+                      return await showDialog(
+                        context: context,
+                        builder:
+                            (context) => AlertDialog(
+                              title: Text('Delete  Session'),
+                              content: Text(
+                                'Are you sure you want to delete this session?',
+                              ),
+                              actions: [
+                                TextButton(
+                                  child: Text('Cancel'),
+                                  onPressed:
+                                      () => Navigator.of(context).pop(false),
+                                ),
+                                TextButton(
+                                  child: Text('Delete'),
+                                  onPressed:
+                                      () => Navigator.of(context).pop(true),
+                                ),
+                              ],
+                            ),
+                      );
+                    },
+                    onDismissed: (_) async {
+                      await TrainingStorage.deleteSessionAt(index);
+                      setState(() {
+                        _sessions.removeAt(index);
+                      });
+                    },
+                    child: Card(
+                      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: ListTile(
+                        title: Text(
+                          DateFormat(
+                            'MMM dd, yyyy – HH:mm',
+                          ).format(session.date),
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(
+                          'Rounds: ${session.rounds} | Round: ${_formatDuration(session.roundLength)} | Rest: ${_formatDuration(session.restTime)}\n'
+                          'Total Time: ${_formatDuration(session.totalTrainingTime)}',
+                        ),
                       ),
                     ),
                   );
