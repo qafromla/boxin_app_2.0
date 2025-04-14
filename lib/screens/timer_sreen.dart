@@ -63,10 +63,6 @@ class _TimerScreenState extends State<TimerScreen> {
       if (timeLeft <= 6 && timeLeft > 0) {
         SoundPlayer.playBeepSound();
       }
-      // 🎯 Play end-round sound 4 seconds before timer ends (only during fight phase)
-      if (timeLeft == 4 && !isResting) {
-        SoundPlayer.playEndRoundSound();
-      }
 
       if (timeLeft > 0) {
         timeLeft--;
