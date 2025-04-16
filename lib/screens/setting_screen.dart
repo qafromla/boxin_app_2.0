@@ -1,7 +1,8 @@
+import 'package:boxing_app/widgets/countdown_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:boxing_app/widgets/icon_buttons.dart';
 import 'package:boxing_app/widgets/bottom_button.dart';
-import 'package:boxing_app/widgets/countdown_launcher.dart';
+import 'package:boxing_app/screens/timer_sreen.dart';
 import '../main.dart'; // Import the themeNotifier
 import 'package:boxing_app/screens/traing_history_screen.dart';
 
@@ -11,6 +12,7 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
+  bool _showCoundown = false;
   int _roundLength = 60;
 
   int _restTime = 30;
@@ -140,81 +142,108 @@ class _SettingScreenState extends State<SettingScreen> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          children: [
-            //Slider for Round Length
-            Text(
-              'Round Length: ${_formatTime(_roundLength)}',
-              style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
-            ),
-            SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
               children: [
-                RoundIconButton(
-                  icon: Icons.remove,
-                  onPressed: _decrementRoundLength,
+                //Slider for Round Length
+                Text(
+                  'Round Length: ${_formatTime(_roundLength)}',
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
                 ),
-                SizedBox(width: 20.0),
-                RoundIconButton(
-                  icon: Icons.add,
-                  onPressed: _incrementRoundLength,
+                SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    RoundIconButton(
+                      icon: Icons.remove,
+                      onPressed: _decrementRoundLength,
+                    ),
+                    SizedBox(width: 20.0),
+                    RoundIconButton(
+                      icon: Icons.add,
+                      onPressed: _incrementRoundLength,
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            SizedBox(height: 50),
-            // Slider for Rest time
-            Text(
-              'Rest Time: ${_formatTime(_restTime)}',
-              style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
-            ),
-            SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                RoundIconButton(
-                  icon: Icons.remove,
-                  onPressed: _decrementRestTime,
+                SizedBox(height: 50),
+                // Slider for Rest time
+                Text(
+                  'Rest Time: ${_formatTime(_restTime)}',
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
                 ),
-                SizedBox(width: 20.0),
-                RoundIconButton(icon: Icons.add, onPressed: _incrementRestTime),
-              ],
-            ),
-            SizedBox(height: 50),
-            // Slider for Rounds
-            Text(
-              'Rounds: $_rounds',
-              style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
-            ),
-            SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                RoundIconButton(
-                  icon: Icons.remove,
-                  onPressed: _decrementRounds,
+                SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    RoundIconButton(
+                      icon: Icons.remove,
+                      onPressed: _decrementRestTime,
+                    ),
+                    SizedBox(width: 20.0),
+                    RoundIconButton(
+                      icon: Icons.add,
+                      onPressed: _incrementRestTime,
+                    ),
+                  ],
                 ),
-                SizedBox(width: 20.0),
-                RoundIconButton(icon: Icons.add, onPressed: _incrementRounds),
-              ],
-            ),
-            SizedBox(height: 50),
+                SizedBox(height: 50),
+                // Slider for Rounds
+                Text(
+                  'Rounds: $_rounds',
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
+                ),
+                SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    RoundIconButton(
+                      icon: Icons.remove,
+                      onPressed: _decrementRounds,
+                    ),
+                    SizedBox(width: 20.0),
+                    RoundIconButton(
+                      icon: Icons.add,
+                      onPressed: _incrementRounds,
+                    ),
+                  ],
+                ),
+                SizedBox(height: 50),
 
-            Spacer(),
-            BottomButton(
-              bottomTitle: 'Start timer',
-              onTap:
-                  () => launchCountdownAndNavigate(
-                    context: context,
-                    roundLength: _roundLength,
-                    restTime: _restTime,
-                    rounds: _rounds,
-                  ),
+                Spacer(),
+                BottomButton(
+                  bottomTitle: 'Start timer',
+                  onTap: () {
+                    setState(() {
+                      _showCoundown = true;
+                    });
+                  },
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          if (_showCoundown)
+            CountdownOverlay(
+              onCountdownComplete: () {
+                setState(() {
+                  _showCoundown = false;
+                });
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => TimerScreen(
+                          roundLength: _roundLength,
+                          restTime: _restTime,
+                          rounds: _rounds,
+                        ),
+                  ),
+                );
+              },
+            ),
+        ],
       ),
     );
   }
