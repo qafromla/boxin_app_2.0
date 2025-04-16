@@ -36,4 +36,8 @@ class TrainingStorage {
     }
   }
 
+  // static Future<void> clearTrainingHistory() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   await prefs.remove('training_history');
+  // }
 }

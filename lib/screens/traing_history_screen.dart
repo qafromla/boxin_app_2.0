@@ -90,7 +90,7 @@ class _TrainingHistoryScreenState extends State<TrainingHistoryScreen> {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Text(
-                          'Rounds: ${session.rounds} | Round: ${_formatDuration(session.roundLength)} | Rest: ${_formatDuration(session.restTime)}\n'
+                          'Rounds: ${session.completedRounds} of ${session.setupRounds} | Round: ${_formatDuration(session.roundLength)} | Rest: ${_formatDuration(session.restTime)}\n'
                           'Total Time: ${_formatDuration(session.totalTrainingTime)}',
                         ),
                       ),

@@ -1,22 +1,26 @@
 class TrainingSession {
   final DateTime date;
-  final int rounds;
+  final int setupRounds;
+  final int completedRounds;
   final int roundLength;
   final int restTime;
 
   TrainingSession({
     required this.date,
-    required this.rounds,
+    required this.completedRounds,
+    required this.setupRounds,
     required this.roundLength,
     required this.restTime,
   });
 
   int get totalTrainingTime =>
-      (rounds * roundLength) + ((rounds - 1) * restTime);
+      (completedRounds * roundLength) +
+      ((completedRounds > 0 ? completedRounds - 1 : 0) * restTime);
 
   Map<String, dynamic> toJson() => {
     'date': date.toIso8601String(),
-    'rounds': rounds,
+    'setupRounds': setupRounds,
+    'completedRounds': completedRounds,
     'roundLength': roundLength,
     'restTime': restTime,
   };
@@ -24,7 +28,8 @@ class TrainingSession {
   static TrainingSession fromJson(Map<String, dynamic> json) {
     return TrainingSession(
       date: DateTime.parse(json['date']),
-      rounds: json['rounds'],
+      setupRounds: json['setupRounds'],
+      completedRounds: json['completedRounds'],
       roundLength: json['roundLength'],
       restTime: json['restTime'],
     );

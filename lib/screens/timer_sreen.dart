@@ -132,7 +132,8 @@ class _TimerScreenState extends State<TimerScreen> {
 
       final session = TrainingSession(
         date: DateTime.now(),
-        rounds: roundsCompleted,
+        setupRounds: widget.rounds,
+        completedRounds: roundsCompleted,
         roundLength: widget.roundLength,
         restTime: widget.restTime,
       );
