@@ -74,73 +74,67 @@ class _TimerScreenState extends State<TimerScreen> {
 
   void nextRoundOrEnd() {
     if (isResting) {
-      // Finished resting → go to next round or end
       isResting = false;
       currentRound++;
-      roundsCompleted = currentRound; // ✅ track actual finished round
+      roundsCompleted = currentRound;
       if (currentRound <= widget.rounds) {
         timeLeft = widget.roundLength;
-        SoundPlayer.playRoundStartSound(); // 🔔 round start
+        SoundPlayer.playRoundStartSound();
       } else {
-        stopTimer(); // training ends
+        stopTimer(userInitiated: false); // Automatically stop when workout ends
       }
     } else {
-      // Finished round → rest only if NOT last round
       if (currentRound < widget.rounds) {
         isResting = true;
         timeLeft = widget.restTime;
-        SoundPlayer.playRestStartSound(); // ✅ rest start sound here
+        SoundPlayer.playRestStartSound();
       } else {
-        stopTimer(); // last round done
+        stopTimer(userInitiated: false); // Automatically stop when workout ends
       }
     }
   }
 
-  void stopTimer() async {
-    // If the session finished naturally (isRunning is false), show summary immediately
-    if (!isRunning) {
-      _showCompletedDialog();
-      return;
-    }
-
-    // If user pressed Stop while running — confirm first
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder:
-          (_) => AlertDialog(
-            title: Text('End Workout?'),
-            content: Text(
-              'Are you sure you want to complete the workout early?',
+  void stopTimer({bool userInitiated = true}) async {
+    if (userInitiated) {
+      // If user pressed Stop while running — confirm first
+      final confirm = await showDialog<bool>(
+        context: context,
+        builder:
+            (_) => AlertDialog(
+              title: Text('End Workout?'),
+              content: Text(
+                'Are you sure you want to complete the workout early?',
+              ),
+              actions: [
+                TextButton(
+                  child: Text('Cancel'),
+                  onPressed: () => Navigator.of(context).pop(false),
+                ),
+                TextButton(
+                  child: Text('Yes, End Workout'),
+                  onPressed: () => Navigator.of(context).pop(true),
+                ),
+              ],
             ),
-            actions: [
-              TextButton(
-                child: Text('Cancel'),
-                onPressed: () => Navigator.of(context).pop(false),
-              ),
-              TextButton(
-                child: Text('Yes, End Workout'),
-                onPressed: () => Navigator.of(context).pop(true),
-              ),
-            ],
-          ),
-    );
-
-    if (confirm == true) {
-      timer?.cancel();
-      isRunning = false;
-      isResting = false;
-
-      final session = TrainingSession(
-        date: DateTime.now(),
-        setupRounds: widget.rounds,
-        completedRounds: roundsCompleted,
-        roundLength: widget.roundLength,
-        restTime: widget.restTime,
       );
-      await TrainingStorage.saveSession(session);
 
-      _showCompletedDialog();
+      if (confirm != true) return;
     }
+
+    timer?.cancel();
+    isRunning = false;
+    isResting = false;
+
+    final session = TrainingSession(
+      date: DateTime.now(),
+      setupRounds: widget.rounds,
+      completedRounds: roundsCompleted,
+      roundLength: widget.roundLength,
+      restTime: widget.restTime,
+    );
+    await TrainingStorage.saveSession(session);
+
+    _showCompletedDialog();
   }
 
   void _showCompletedDialog() {
