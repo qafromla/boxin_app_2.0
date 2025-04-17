@@ -8,11 +8,14 @@ class SoundPlayer {
   }
 
   static Future<void> playEndRoundSound() async {
-    await _audioPlayer.play(AssetSource('sounds/end_boxing_bell.mp3'));
+    await _audioPlayer.play(AssetSource('sounds/start_boxing_bell.mp3'));
   }
 
   static Future<void> playBeepSound() async {
-    await _audioPlayer.play(AssetSource('sounds/beep_sound.mp3'));
+    await _audioPlayer.play(AssetSource('sounds/beep_sound_1.wav'));
   }
 
+  static Future<void> playRestStartSound() async {
+    await _audioPlayer.play(AssetSource('sounds/start_boxing_bell.mp3'));
+  }
 }

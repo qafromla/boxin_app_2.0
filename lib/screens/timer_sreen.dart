@@ -5,6 +5,8 @@ import 'package:boxing_app/utilities/time_formatter.dart';
 import 'package:boxing_app/widgets/round_progress_bar.dart';
 import 'package:boxing_app/utilities/sound_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:boxing_app/models/training_session.dart';
+import 'package:boxing_app/widgets/training_storage.dart';
 
 class TimerScreen extends StatefulWidget {
   final int roundLength;
@@ -30,6 +32,7 @@ class _TimerScreenState extends State<TimerScreen> {
   bool isPaused = false;
   Timer? timer;
   bool justBeeped = false;
+  int roundsCompleted = 0;
 
   @override
   void initState() {
@@ -56,9 +59,9 @@ class _TimerScreenState extends State<TimerScreen> {
     if (isPaused) return;
 
     setState(() {
-      // 🎯 Play end-round sound 4 seconds before timer ends (only during fight phase)
-      if (timeLeft == 4 && !isResting) {
-        SoundPlayer.playEndRoundSound();
+      // 🔊 Countdown beep at 5, 4, 3, 2, 1 seconds
+      if (timeLeft <= 6 && timeLeft > 0) {
+        SoundPlayer.playBeepSound();
       }
 
       if (timeLeft > 0) {
@@ -72,24 +75,69 @@ class _TimerScreenState extends State<TimerScreen> {
   void nextRoundOrEnd() {
     if (isResting) {
       isResting = false;
-      if (currentRound < widget.rounds) {
-        currentRound++;
+      currentRound++;
+      roundsCompleted = currentRound;
+      if (currentRound <= widget.rounds) {
         timeLeft = widget.roundLength;
         SoundPlayer.playRoundStartSound();
       } else {
-        stopTimer();
+        stopTimer(userInitiated: false); // Automatically stop when workout ends
       }
     } else {
-      isResting = true;
-      timeLeft = widget.restTime;
+      if (currentRound < widget.rounds) {
+        isResting = true;
+        timeLeft = widget.restTime;
+        SoundPlayer.playRestStartSound();
+      } else {
+        stopTimer(userInitiated: false); // Automatically stop when workout ends
+      }
     }
   }
 
-  void stopTimer() {
+  void stopTimer({bool userInitiated = true}) async {
+    if (userInitiated) {
+      // If user pressed Stop while running — confirm first
+      final confirm = await showDialog<bool>(
+        context: context,
+        builder:
+            (_) => AlertDialog(
+              title: Text('End Workout?'),
+              content: Text(
+                'Are you sure you want to complete the workout early?',
+              ),
+              actions: [
+                TextButton(
+                  child: Text('Cancel'),
+                  onPressed: () => Navigator.of(context).pop(false),
+                ),
+                TextButton(
+                  child: Text('Yes, End Workout'),
+                  onPressed: () => Navigator.of(context).pop(true),
+                ),
+              ],
+            ),
+      );
+
+      if (confirm != true) return;
+    }
+
     timer?.cancel();
     isRunning = false;
     isResting = false;
 
+    final session = TrainingSession(
+      date: DateTime.now(),
+      setupRounds: widget.rounds,
+      completedRounds: roundsCompleted,
+      roundLength: widget.roundLength,
+      restTime: widget.restTime,
+    );
+    await TrainingStorage.saveSession(session);
+
+    _showCompletedDialog();
+  }
+
+  void _showCompletedDialog() {
     showDialog(
       context: context,
       builder:
@@ -150,6 +198,7 @@ class _TimerScreenState extends State<TimerScreen> {
             RoundProgressBar(
               totalRounds: widget.rounds,
               currentRound: currentRound,
+              isResting: isResting,
             ),
             SizedBox(height: 20),
             _buildControlButtons(),
