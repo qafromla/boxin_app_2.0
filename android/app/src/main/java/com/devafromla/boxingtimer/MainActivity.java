@@ -1,4 +1,4 @@
-package com.example.boxing_app;
+package com.devafromla.boxingtimer;
 
 import io.flutter.embedding.android.FlutterActivity;
 
