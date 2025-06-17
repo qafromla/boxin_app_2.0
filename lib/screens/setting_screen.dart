@@ -13,7 +13,7 @@ class SettingScreen extends StatefulWidget {
 
 class _SettingScreenState extends State<SettingScreen> {
   bool _showCoundown = false;
-  int _roundLength = 60;
+  int _roundLength = 180;
 
   int _restTime = 60;
 
@@ -21,28 +21,28 @@ class _SettingScreenState extends State<SettingScreen> {
 
   void _incrementRoundLength() {
     setState(() {
-      _roundLength += 10;
+      _roundLength += 30;
     });
   }
 
   void _decrementRoundLength() {
     setState(() {
-      if (_roundLength > 10) {
-        _roundLength -= 10;
+      if (_roundLength > 30) {
+        _roundLength -= 30;
       }
     });
   }
 
   void _incrementRestTime() {
     setState(() {
-      _restTime += 10;
+      _restTime += 30;
     });
   }
 
   void _decrementRestTime() {
     setState(() {
-      if (_restTime > 10) {
-        _restTime -= 10;
+      if (_restTime > 30) {
+        _restTime -= 30;
       }
     });
   }

@@ -174,35 +174,82 @@ class _TimerScreenState extends State<TimerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isPortrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
+    double timerFontSize =
+        isPortrait ? screenHeight * 0.12 : screenWidth * 0.12;
+
     return Scaffold(
       appBar: AppBar(title: Text('Timer')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            RoundDisplay(current: currentRound, total: widget.rounds),
-            SizedBox(height: 150),
-            TimerDisplay(
-              timeLeft: timeLeft,
-              formatTime: formatTime,
-              textStyle: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.w900,
-                fontSize: 120,
-                letterSpacing: 2,
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: 500, // Limit width for tablet/desktop
+                  minWidth: 0,
+                  minHeight: constraints.maxHeight,
+                ),
+                child: SingleChildScrollView(
+                  child: IntrinsicHeight(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          RoundDisplay(
+                            current: currentRound,
+                            total: widget.rounds,
+                          ),
+                          Spacer(),
+                          TimerDisplay(
+                            timeLeft: timeLeft,
+                            formatTime: formatTime,
+                            textStyle: Theme.of(
+                              context,
+                            ).textTheme.headlineMedium?.copyWith(
+                              fontWeight: FontWeight.w900,
+                              fontSize: timerFontSize,
+                              letterSpacing: 2,
+                            ),
+                          ),
+                          SizedBox(
+                            height:
+                                isPortrait
+                                    ? screenHeight * 0.03
+                                    : screenWidth * 0.03,
+                          ),
+                          PhaseLabel(isResting: isResting),
+                          SizedBox(
+                            height:
+                                isPortrait
+                                    ? screenHeight * 0.03
+                                    : screenWidth * 0.03,
+                          ),
+                          RoundProgressBar(
+                            totalRounds: widget.rounds,
+                            currentRound: currentRound,
+                            isResting: isResting,
+                          ),
+                          SizedBox(
+                            height:
+                                isPortrait
+                                    ? screenHeight * 0.02
+                                    : screenWidth * 0.02,
+                          ),
+                          _buildControlButtons(),
+                          Spacer(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ),
-            ),
-            SizedBox(height: 40),
-            PhaseLabel(isResting: isResting),
-            SizedBox(height: 40),
-            RoundProgressBar(
-              totalRounds: widget.rounds,
-              currentRound: currentRound,
-              isResting: isResting,
-            ),
-            SizedBox(height: 20),
-            _buildControlButtons(),
-          ],
+            );
+          },
         ),
       ),
     );
