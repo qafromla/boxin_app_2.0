@@ -17,7 +17,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
   int _restTime = 30;
 
-  int _rounds = 3;
+  int _rounds = 12;
 
   void _incrementRoundLength() {
     setState(() {
