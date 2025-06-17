@@ -15,7 +15,7 @@ class _SettingScreenState extends State<SettingScreen> {
   bool _showCoundown = false;
   int _roundLength = 60;
 
-  int _restTime = 30;
+  int _restTime = 60;
 
   int _rounds = 12;
 
