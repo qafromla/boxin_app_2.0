@@ -19,9 +19,9 @@ class BoxingTimerApp extends StatelessWidget {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           theme: ThemeData.light().copyWith(
-            scaffoldBackgroundColor: Color(0xFFBDBDBD), // background
+            scaffoldBackgroundColor: Colors.white, // background
             appBarTheme: AppBarTheme(
-              backgroundColor: Color(0xFFA4A4A4), // app bar
+              backgroundColor: Color(0xFFF5F5F5), // app bar
               elevation: 0,
               centerTitle: true,
               titleTextStyle: TextStyle(
