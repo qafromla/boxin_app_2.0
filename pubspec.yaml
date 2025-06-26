@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+version: 1.0.0+3
 
 environment:
     sdk: ^3.7.2
@@ -29,7 +29,7 @@ dependencies:
     wakelock_plus: ^1.2.11
     shared_preferences: ^2.5.3
     intl: ^0.20.2
-    flutter_launcher_icons: ^0.14.3
+    flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
     flutter_test:
@@ -39,10 +39,10 @@ dev_dependencies:
 
 flutter_icons:
     android: true
-    ios: true
-    image_path: 'assets/icon/app_icon.png' # put your 1024x1024 icon here
-    adaptive_icon_foreground: 'assets/icon/app_icon.png'
-    adaptive_icon_background: '#BDBDBD' # or use a solid color from your app
+    ios: false
+    image_path: 'assets/icon/app_icon_foreground.png' # put your 1024x1024 icon here
+    adaptive_icon_foreground: 'assets/icon/app_icon_foreground.png'
+    adaptive_icon_background: '#ffffff' # or use a solid color from your app
 
 flutter:
     uses-material-design: true
