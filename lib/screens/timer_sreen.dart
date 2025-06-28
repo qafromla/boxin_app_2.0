@@ -7,6 +7,7 @@ import 'package:boxing_app/utilities/sound_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:boxing_app/models/training_session.dart';
 import 'package:boxing_app/widgets/training_storage.dart';
+import 'package:boxing_app/utilities/sound_setting.dart';
 
 class TimerScreen extends StatefulWidget {
   final int roundLength;
@@ -61,7 +62,9 @@ class _TimerScreenState extends State<TimerScreen> {
     setState(() {
       // 🔊 Countdown beep at 5, 4, 3, 2, 1 seconds
       if (timeLeft <= 6 && timeLeft > 0) {
-        SoundPlayer.playBeepSound();
+        if (soundOnNotifier.value) {
+          SoundPlayer.playBeepSound();
+        }
       }
 
       if (timeLeft > 0) {
@@ -79,7 +82,9 @@ class _TimerScreenState extends State<TimerScreen> {
       roundsCompleted = currentRound;
       if (currentRound <= widget.rounds) {
         timeLeft = widget.roundLength;
-        SoundPlayer.playRoundStartSound();
+        if (soundOnNotifier.value) {
+          SoundPlayer.playRoundStartSound();
+        }
       } else {
         stopTimer(userInitiated: false); // Automatically stop when workout ends
       }
@@ -87,7 +92,9 @@ class _TimerScreenState extends State<TimerScreen> {
       if (currentRound < widget.rounds) {
         isResting = true;
         timeLeft = widget.restTime;
-        SoundPlayer.playRestStartSound();
+        if (soundOnNotifier.value) {
+          SoundPlayer.playRestStartSound();
+        }
       } else {
         stopTimer(userInitiated: false); // Automatically stop when workout ends
       }

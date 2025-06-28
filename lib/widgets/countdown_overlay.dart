@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../utilities/sound_player.dart';
+import '../utilities/sound_setting.dart';
 
 class CountdownOverlay extends StatefulWidget {
   final VoidCallback onCountdownComplete;
@@ -24,7 +25,9 @@ class _CountdownOverlayState extends State<CountdownOverlay> {
   void _startCountdown() {
     Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_currentCount > 1) {
-        SoundPlayer.playBeepSound();
+        if (soundOnNotifier.value) {
+          SoundPlayer.playBeepSound();
+        }
         setState(() {
           _currentCount--;
         });
@@ -34,9 +37,9 @@ class _CountdownOverlayState extends State<CountdownOverlay> {
           _bgColor = Colors.green;
           _currentCount = 0;
         });
-
-        SoundPlayer.playRoundStartSound();
-
+        if (soundOnNotifier.value) {
+          SoundPlayer.playRoundStartSound();
+        }
         Future.delayed(const Duration(milliseconds: 600), () {
           widget.onCountdownComplete();
         });
