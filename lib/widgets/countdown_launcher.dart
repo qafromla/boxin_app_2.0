@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:boxing_app/screens/timer_sreen.dart';
 import 'package:boxing_app/utilities/sound_player.dart';
+import 'package:boxing_app/utilities/sound_setting.dart';
 
 Future<void> launchCountdownAndNavigate({
   required BuildContext context,
@@ -21,7 +22,9 @@ Future<void> launchCountdownAndNavigate({
             if (countdown > 1) {
               countdown--;
               setState(() {});
-              SoundPlayer.playBeepSound();
+              if (soundOnNotifier.value) {
+                SoundPlayer.playBeepSound();
+              }
             } else {
               timer.cancel();
               Navigator.of(context).pop();
@@ -36,7 +39,9 @@ Future<void> launchCountdownAndNavigate({
                       ),
                 ),
               );
-              SoundPlayer.playRoundStartSound();
+              if (soundOnNotifier.value) {
+                SoundPlayer.playRoundStartSound();
+              }
             }
           });
 
