@@ -186,104 +186,133 @@ class _SettingScreenState extends State<SettingScreen> {
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  'Round Length: ${_formatTime(_roundLength)}',
-                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
-                ),
-                SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    RoundIconButton(
-                      icon: Icons.remove,
-                      onPressed: _decrementRoundLength,
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Round Length: ${_formatTime(_roundLength)}',
+                            style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              RoundIconButton(
+                                icon: Icons.remove,
+                                onPressed: _decrementRoundLength,
+                              ),
+                              SizedBox(width: 20.0),
+                              RoundIconButton(
+                                icon: Icons.add,
+                                onPressed: _incrementRoundLength,
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 50),
+                          Text(
+                            'Rest Time: ${_formatTime(_restTime)}',
+                            style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              RoundIconButton(
+                                icon: Icons.remove,
+                                onPressed: _decrementRestTime,
+                              ),
+                              SizedBox(width: 20.0),
+                              RoundIconButton(
+                                icon: Icons.add,
+                                onPressed: _incrementRestTime,
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 50),
+                          Text(
+                            'Rounds: $_rounds',
+                            style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              RoundIconButton(
+                                icon: Icons.remove,
+                                onPressed: _decrementRounds,
+                              ),
+                              SizedBox(width: 20.0),
+                              RoundIconButton(
+                                icon: Icons.add,
+                                onPressed: _incrementRounds,
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 50),
+                          SizedBox(height: 24),
+                        ],
+                      ),
                     ),
-                    SizedBox(width: 20.0),
-                    RoundIconButton(
-                      icon: Icons.add,
-                      onPressed: _incrementRoundLength,
-                    ),
-                  ],
+                  ),
                 ),
-                SizedBox(height: 50),
-                Text(
-                  'Rest Time: ${_formatTime(_restTime)}',
-                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
-                ),
-                SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    RoundIconButton(
-                      icon: Icons.remove,
-                      onPressed: _decrementRestTime,
-                    ),
-                    SizedBox(width: 20.0),
-                    RoundIconButton(
-                      icon: Icons.add,
-                      onPressed: _incrementRestTime,
-                    ),
-                  ],
-                ),
-                SizedBox(height: 50),
-                Text(
-                  'Rounds: $_rounds',
-                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
-                ),
-                SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    RoundIconButton(
-                      icon: Icons.remove,
-                      onPressed: _decrementRounds,
-                    ),
-                    SizedBox(width: 20.0),
-                    RoundIconButton(
-                      icon: Icons.add,
-                      onPressed: _incrementRounds,
-                    ),
-                  ],
-                ),
-                SizedBox(height: 50),
-                Spacer(),
-                BottomButton(
-                  bottomTitle: 'Start timer',
-                  onTap: () {
-                    setState(() {
-                      _showCoundown = true;
-                    });
-                  },
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 24,
+                    right: 24,
+                    bottom: MediaQuery.of(context).padding.bottom + 16,
+                    top: 8,
+                  ),
+                  child: BottomButton(
+                    bottomTitle: 'Start timer',
+                    onTap: () {
+                      setState(() {
+                        _showCoundown = true;
+                      });
+                    },
+                  ),
                 ),
               ],
             ),
-          ),
-          if (_showCoundown)
-            CountdownOverlay(
-              onCountdownComplete: () {
-                setState(() {
-                  _showCoundown = false;
-                });
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder:
-                        (context) => TimerScreen(
-                          roundLength: _roundLength,
-                          restTime: _restTime,
-                          rounds: _rounds,
-                        ),
-                  ),
-                );
-              },
-            ),
-        ],
+            if (_showCoundown)
+              CountdownOverlay(
+                onCountdownComplete: () {
+                  setState(() {
+                    _showCoundown = false;
+                  });
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => TimerScreen(
+                            roundLength: _roundLength,
+                            restTime: _restTime,
+                            rounds: _rounds,
+                          ),
+                    ),
+                  );
+                },
+              ),
+          ],
+        ),
       ),
     );
   }
