@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 import 'screens/setting_screen.dart';
-
+import 'package:flutter/services.dart';
 // Add a ValueNotifier to manage the theme mode
 final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+
+    statusBarIconBrightness: Brightness.dark, // or light if your background is dark
+    systemNavigationBarIconBrightness: Brightness.dark,
+  ));
   runApp(BoxingTimerApp());
 }
 

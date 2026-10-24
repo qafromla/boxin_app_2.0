@@ -15,7 +15,7 @@ plugins {
 
 android {
     namespace = "com.devafromla.boxingtimer"
-    compileSdk = 35 // Replace with the actual compileSdkVersion
+    compileSdk = 36 // Replace with the actual compileSdkVersion
     ndkVersion = "27.0.12077973"
 
     compileOptions {
@@ -32,10 +32,10 @@ android {
         applicationId = "com.devafromla.boxingtimer"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = 21 // Replace with the actual minSdkVersion
-        targetSdk = 35 // Replace with the actual targetSdkVersion
-        versionCode = 7 // Replace with the actual versionCode
-        versionName = "1.0.4" // Replace with the actual versionName
+        minSdk = flutter.minSdkVersion // Replace with the actual minSdkVersion
+        targetSdk = 36 // Replace with the actual targetSdkVersion
+        versionCode = 10 // Replace with the actual versionCode
+        versionName = "1.0.7" // Replace with the actual versionName
     }
     signingConfigs {
         create("release") {
@@ -57,4 +57,9 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    implementation("androidx.activity:activity:1.9.0")
+    implementation("androidx.core:core-ktx:1.13.1") // Required for edge-to-edge WindowCompat
 }
