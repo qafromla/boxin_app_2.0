@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
-import 'screens/setting_screen.dart';
 import 'package:flutter/services.dart';
-// Add a ValueNotifier to manage the theme mode
-final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
 
-void main() async {
+import 'screens/home_screen.dart';
+import 'services/app_settings.dart';
+import 'theme/app_theme.dart';
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-
-    statusBarIconBrightness: Brightness.dark, // or light if your background is dark
-    systemNavigationBarIconBrightness: Brightness.dark,
-  ));
-  runApp(BoxingTimerApp());
+  await AppSettings.load(); // theme, sound and last workout setup
+  runApp(const BoxingTimerApp());
 }
 
 class BoxingTimerApp extends StatelessWidget {
@@ -22,49 +18,22 @@ class BoxingTimerApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<ThemeMode>(
-      valueListenable: themeNotifier,
-      builder: (context, currentTheme, child) {
+      valueListenable: AppSettings.themeMode,
+      builder: (context, mode, _) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          theme: ThemeData.light().copyWith(
-            scaffoldBackgroundColor: Colors.white, // background
-            appBarTheme: AppBarTheme(
-              backgroundColor: Color(0xFFF5F5F5), // app bar
-              elevation: 0,
-              centerTitle: true,
-              titleTextStyle: TextStyle(
-                color: Colors.black87, // dark gray title
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-              iconTheme: IconThemeData(color: Colors.black87),
-            ),
-            textTheme: ThemeData.light().textTheme.apply(
-              bodyColor: Colors.black87,
-              displayColor: Colors.black87,
-            ),
-          ),
-          darkTheme: ThemeData.dark().copyWith(
-            scaffoldBackgroundColor: Color(0xFF0A0E21), // background
-            appBarTheme: AppBarTheme(
-              backgroundColor: Color(0xFF0A0E21), // app bar
-              elevation: 0,
-              centerTitle: true,
-              titleTextStyle: TextStyle(
-                color: Colors.white, // white title
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-              iconTheme: IconThemeData(color: Colors.white),
-            ),
-            textTheme: ThemeData.dark().textTheme.apply(
-              bodyColor: Colors.white,
-              displayColor: Colors.white,
-            ),
-          ),
-          themeMode: currentTheme, // Use the current theme mode
           title: 'Boxing Timer',
-          home: SettingScreen(),
+          theme: AppTheme.light(),
+          darkTheme: AppTheme.dark(),
+          themeMode: mode,
+          // Status bar icons follow the current theme (also on screens
+          // without an AppBar).
+          builder:
+              (context, child) => AnnotatedRegion<SystemUiOverlayStyle>(
+                value: AppTheme.overlayFor(Theme.of(context).brightness),
+                child: child!,
+              ),
+          home: const HomeScreen(),
         );
       },
     );
