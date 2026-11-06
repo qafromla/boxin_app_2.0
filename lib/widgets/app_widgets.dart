@@ -263,8 +263,8 @@ class RoundSegments extends StatelessWidget {
   Widget build(BuildContext context) {
     return Wrap(
       alignment: WrapAlignment.center,
-      spacing: 6,
-      runSpacing: 6,
+      spacing: 16,
+      runSpacing: 8,
       children: List.generate(total, (i) {
         final round = i + 1;
         final Color color;
@@ -277,11 +277,11 @@ class RoundSegments extends StatelessWidget {
         }
         return AnimatedContainer(
           duration: const Duration(milliseconds: 300),
-          width: 22,
-          height: 22,
+          width: 20,
+          height: 20,
           decoration: BoxDecoration(
             color: color,
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(4),
           ),
         );
       }),

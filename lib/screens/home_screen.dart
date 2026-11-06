@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../services/app_settings.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_widgets.dart';
+import 'app_settings_screen.dart';
 import 'settings_screen.dart';
-import 'training_history_screen.dart';
 import 'workout_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -73,14 +73,6 @@ class HomeScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 10),
                         MenuTile(
-                          icon: Icons.bar_chart_rounded,
-                          title: 'Training History',
-                          onTap:
-                              () =>
-                                  _open(context, const TrainingHistoryScreen()),
-                        ),
-                        const SizedBox(height: 10),
-                        MenuTile(
                           icon: Icons.layers_outlined,
                           title: 'Presets',
                           onTap:
@@ -123,11 +115,12 @@ class _TopBar extends StatelessWidget {
               ),
         ),
         IconButton(
-          tooltip: context.isDark ? 'Light mode' : 'Dark mode',
-          icon: Icon(
-            context.isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-          ),
-          onPressed: () => AppSettings.setDarkMode(!context.isDark),
+          tooltip: 'Settings',
+          icon: const Icon(Icons.settings_rounded),
+          onPressed:
+              () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const AppSettingsScreen()),
+              ),
         ),
       ],
     );

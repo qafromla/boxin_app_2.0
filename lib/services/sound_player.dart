@@ -15,21 +15,29 @@ class SoundPlayer {
 
   /// Round starts: the classic "ding-ding" start bell.
   static Future<void> playRoundStart() =>
-      _play(_bell, 'sounds/start_boxing_bell.mp3');
+      _play(() => _bell, 'sounds/start_boxing_bell.mp3');
 
   /// Round ends / rest starts: a different bell, so you can tell by ear.
-  static Future<void> playRestStart() => _play(_bell, 'sounds/boxing_bell.mp3');
+  static Future<void> playRestStart() =>
+      _play(() => _bell, 'sounds/boxing_bell.mp3');
 
   /// Whole workout finished.
   static Future<void> playWorkoutEnd() =>
-      _play(_bell, 'sounds/boxing_bell.mp3');
+      _play(() => _bell, 'sounds/boxing_bell.mp3');
 
   /// Short countdown beep (last 5 seconds).
-  static Future<void> playBeep() => _play(_beep, 'sounds/beep_sound_1.wav');
+  static Future<void> playBeep() =>
+      _play(() => _beep, 'sounds/beep_sound_1.wav');
 
-  static Future<void> _play(AudioPlayer player, String asset) async {
+  /// [getPlayer] is only called when sound is on, so a muted app never creates
+  /// a player.
+  static Future<void> _play(
+    AudioPlayer Function() getPlayer,
+    String asset,
+  ) async {
     if (!AppSettings.soundOn.value) return;
     try {
+      final player = getPlayer();
       await player.stop();
       await player.play(AssetSource(asset));
     } catch (_) {

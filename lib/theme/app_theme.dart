@@ -8,6 +8,10 @@ class AppColors {
   static const green = Color(0xFF2EB24C);
   static const orange = Color(0xFFFF8A00);
 
+  /// The word REST on the workout screen. Darker than [green] so it stays
+  /// readable on the light background as well as the dark one.
+  static const restText = Color(0xFF128A3E);
+
   // Light
   static const lightBackground = Color(0xFFF3F3F5);
   static const lightCard = Colors.white;

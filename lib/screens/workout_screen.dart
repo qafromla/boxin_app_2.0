@@ -40,9 +40,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
 
   Timer? _ticker;
   Timer? _countdownTimer;
-  late int? _countdown = widget.countdownSeconds > 0
-      ? widget.countdownSeconds
-      : null;
+  late int? _countdown =
+      widget.countdownSeconds > 0 ? widget.countdownSeconds : null;
   bool _saved = false;
 
   @override
@@ -211,10 +210,10 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
 
   // ---------------------------------------------------------------- UI
 
+  /// Red = fight, green = rest, grey = paused or over.
   Color get _phaseColor {
-    if (_engine.isPaused) return AppColors.orange;
-    if (_engine.phase == WorkoutPhase.rest) return AppColors.green;
-    if (_engine.remainingSeconds <= 10) return AppColors.orange;
+    if (_engine.isPaused || _engine.isOver) return context.subtleTextColor;
+    if (_engine.phase == WorkoutPhase.rest) return AppColors.restText;
     return AppColors.red;
   }
 
@@ -254,59 +253,58 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     );
   }
 
+  /// Word sizes and positions match the original timer screen; colors and
+  /// text style come from the app theme.
   Widget _buildBody(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    final timerSize = (size.shortestSide * 0.28).clamp(64.0, 150.0);
+    final isPortrait =
+        MediaQuery.orientationOf(context) == Orientation.portrait;
+    final base = isPortrait ? size.height : size.width;
     final color = _phaseColor;
 
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 500),
-        child: LayoutBuilder(
-          builder:
-              (context, constraints) => SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: 500,
+              minHeight: constraints.maxHeight,
+            ),
+            child: SingleChildScrollView(
+              child: IntrinsicHeight(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      const SizedBox(height: 8),
                       _RoundTitle(
                         current: _engine.currentRound,
                         total: widget.rounds,
                         isRest: _engine.phase == WorkoutPhase.rest,
                       ),
-                      const SizedBox(height: 16),
-                      _PhaseChip(
-                        text: _phaseText,
+                      const Spacer(),
+                      _TimerText(
+                        seconds: _engine.remainingSeconds,
+                        size: base * 0.12,
+                        glow: color,
                         color:
-                            _engine.isPaused || _engine.isOver
-                                ? context.subtleTextColor
-                                : color,
+                            _engine.remainingSeconds <= 10 &&
+                                    _engine.phase == WorkoutPhase.work &&
+                                    !_engine.isOver &&
+                                    !_engine.isPaused
+                                ? AppColors.orange
+                                : context.textColor,
                       ),
-                      SizedBox(
-                        height: timerSize * 1.6,
-                        child: Center(
-                          child:
-                              _engine.isPaused
-                                  ? _PausedView(
-                                    remaining: _engine.remainingSeconds,
-                                  )
-                                  : _TimerText(
-                                    seconds: _engine.remainingSeconds,
-                                    size: timerSize,
-                                    glow: color,
-                                    color:
-                                        _engine.remainingSeconds <= 10 &&
-                                                _engine.phase ==
-                                                    WorkoutPhase.work &&
-                                                !_engine.isOver
-                                            ? AppColors.orange
-                                            : context.textColor,
-                                  ),
+                      SizedBox(height: base * 0.03),
+                      Text(
+                        _phaseText,
+                        style: TextStyle(
+                          fontSize: 48,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 2,
+                          color: color,
                         ),
                       ),
+                      SizedBox(height: base * 0.03),
                       RoundSegments(
                         total: widget.rounds,
                         current: _engine.currentRound,
@@ -316,15 +314,17 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                                 ? AppColors.green
                                 : AppColors.red,
                       ),
-                      const SizedBox(height: 36),
+                      SizedBox(height: base * 0.09),
                       _buildControls(),
-                      const SizedBox(height: 16),
+                      const Spacer(),
                     ],
                   ),
                 ),
               ),
-        ),
-      ),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -373,7 +373,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
           icon: Icons.chevron_left_rounded,
           label: '−30s',
           onPressed:
-              () => setState(() => _engine.adjust(const Duration(seconds: -30))),
+              () =>
+                  setState(() => _engine.adjust(const Duration(seconds: -30))),
         ),
         CircleControl(
           icon: Icons.pause_rounded,
@@ -393,6 +394,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   }
 }
 
+/// "Round 1/8", or "Next: Round 2/8" during rest.
 class _RoundTitle extends StatelessWidget {
   const _RoundTitle({
     required this.current,
@@ -406,59 +408,21 @@ class _RoundTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const style = TextStyle(fontSize: 28, fontWeight: FontWeight.w800);
-    return Column(
-      children: [
-        Text.rich(
-          TextSpan(
-            style: style.copyWith(color: context.textColor),
-            children: [
-              TextSpan(text: isRest ? 'Next: Round ' : 'Round '),
-              TextSpan(
-                text: '${isRest ? current + 1 : current}',
-                style: const TextStyle(color: AppColors.red),
-              ),
-              TextSpan(text: ' of $total'),
-            ],
-          ),
-        ),
-        const SizedBox(height: 6),
-        Container(
-          width: 130,
-          height: 3,
-          decoration: BoxDecoration(
-            color: AppColors.red,
-            borderRadius: BorderRadius.circular(2),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _PhaseChip extends StatelessWidget {
-  const _PhaseChip({required this.text, required this.color});
-
-  final String text;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 250),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        text,
+    return Text.rich(
+      TextSpan(
         style: TextStyle(
-          color: color,
-          fontWeight: FontWeight.w900,
-          letterSpacing: 3,
-          fontSize: 15,
+          fontSize: 30,
+          fontWeight: FontWeight.w800,
+          color: context.textColor,
         ),
+        children: [
+          TextSpan(text: isRest ? 'Next: Round ' : 'Round '),
+          TextSpan(
+            text: '${isRest ? current + 1 : current}',
+            style: const TextStyle(color: AppColors.red, fontSize: 44),
+          ),
+          TextSpan(text: '/$total', style: const TextStyle(fontSize: 44)),
+        ],
       ),
     );
   }
@@ -490,58 +454,44 @@ class _TimerText extends StatelessWidget {
           ),
         ],
       ),
-      child: FittedBox(
-        child: Text(
-          formatTime(seconds),
-          style: TextStyle(
-            fontSize: size,
-            fontWeight: FontWeight.w900,
-            letterSpacing: -1,
-            color: color,
-            fontFeatures: const [FontFeature.tabularFigures()],
-          ),
+      child: Text(
+        formatTime(seconds),
+        style: TextStyle(
+          fontSize: size,
+          fontWeight: FontWeight.w900,
+          letterSpacing: -1,
+          color: color,
+          fontFeatures: const [FontFeature.tabularFigures()],
         ),
       ),
     );
   }
 }
 
-class _PausedView extends StatelessWidget {
-  const _PausedView({required this.remaining});
+const _bigTextStyle = TextStyle(
+  fontSize: 200,
+  height: 1.1,
+  fontWeight: FontWeight.w900,
+  fontFeatures: [FontFeature.tabularFigures()],
+);
 
-  final int remaining;
+/// Text scaled to fill whatever space it is given, so it is as large as the
+/// screen allows on any phone, in either orientation.
+class _BigText extends StatelessWidget {
+  const _BigText(this.text, {required this.color});
+
+  final String text;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.orange.withValues(alpha: 0.25),
-            blurRadius: 80,
-            spreadRadius: 20,
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.pause_rounded, size: 84, color: AppColors.orange),
-          const Text(
-            'PAUSED',
-            style: TextStyle(fontSize: 38, fontWeight: FontWeight.w900),
-          ),
-          Text(
-            '${formatTime(remaining)} left',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: context.subtleTextColor,
-              fontFeatures: const [FontFeature.tabularFigures()],
-            ),
-          ),
-        ],
+    return Center(
+      child: FittedBox(
+        child: Text(
+          text,
+          maxLines: 1,
+          style: _bigTextStyle.copyWith(color: color),
+        ),
       ),
     );
   }
@@ -560,31 +510,25 @@ class _CountdownOverlay extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         color: go ? AppColors.green : AppColors.red,
-        child: Center(
+        child: SafeArea(
           child: Material(
             type: MaterialType.transparency,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  go ? 'GO!' : 'GET READY',
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 4,
-                  ),
-                ),
-                if (!go)
-                  Text(
-                    '$value',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 150,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-              ],
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child:
+                  go
+                      ? const _BigText('GO!', color: Colors.white)
+                      : Column(
+                        children: [
+                          const Expanded(
+                            child: _BigText('GET READY', color: Colors.white),
+                          ),
+                          Expanded(
+                            flex: 3,
+                            child: _BigText('$value', color: Colors.white),
+                          ),
+                        ],
+                      ),
             ),
           ),
         ),
